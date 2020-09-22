@@ -1,0 +1,3 @@
+[submodule "daily_tasks"]
+	path = daily_tasks
+	url = https://github.com/tgeery/daily_tasks
