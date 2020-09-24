@@ -1,4 +1,5 @@
 <DOCTYPE html>
+{% load static %}
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
@@ -8,8 +9,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     
     <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> --> 
+    <!-- <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
 
     <script>
         function openNav() {
@@ -28,6 +29,14 @@
 
         function closeLogin() {
             document.getElementById("login_popup").style.display = "none";
+        }
+
+        function openNewUser() {
+            document.getElementById("newuser_popup").style.display = "block";
+        }
+
+        function closeNewUser() {
+            document.getElementById("newuser_popup").style.display = "none";
         }
     </script>
   
@@ -78,7 +87,7 @@
         }
 
         #sidebar_button {
-            background-image: url('https://mdbootstrap.com/img/svg/hamburger2.svg?color=000');
+            background-image: url("{% static '/images/hamburger.png' %}");
             height: 50px;
             width: 50px;
             border: none;
@@ -110,6 +119,26 @@
             -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
             box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
             text-align: center;
+        }
+
+        #newuser_content {
+            margin: 0 auto;
+            -webkit-border-radius: 10px 10px 10px 10px;
+            border-radius: 10px 10px 10px 10px;
+            background: #fff;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            padding: 0px;
+            -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+            box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        #login_table {
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .fadeInDown {
@@ -203,20 +232,42 @@
         <nav class="navbar navbar-light" style="border-bottom: 1px solid #CCC;">
             <button id="sidebar_button" class="openbtn" onclick="openNav()"></button>
             <h1 class="navbar-brand">Tasks</h1>
-            <a href="" onClick="openLogin()" style="color: gray;">Login</a>
+            <div>
+                <a href="" onClick="openLogin()" style="color: gray; margin-right: 10px;">Login</a>
+                <a href="" onClick="openNewUser()" style="color: gray;">New User</a>
+            </div>
         </nav>
-        <p style="text-align: center;">No content found.</p>
+        <p style="text-align: center;">No content found. Try logging in.</p>
     </div>
     <div id="login_popup" class="login_wrapper fadeInDown">
         <div id="login_content">
             <div class="fadeIn first"></div>
             <h2>Login</h2>
-            <input type="text" id="username" placeholder="username"><br/>
-            <input type="text" id="password" placeholder="password"><br/>
-            <button>Submit</button>
-            <button onclick="closeLogin()">Cancel</button><br/>
-            <a href="">New User</a>
+            <form action="/" method="POST">
+                {% csrf_token %}
+                <table id="login_table">
+                    {{ loginform }}
+                </table>
+                <input type="submit" value="Submit">
+                <input type="button" onclick="closeLogin()" value="Cancel"><br/>
+            </form>
+            <button onclick="closeLogin(); openNewUser()">New User</button>
         </div>
     </div>
+    <div id="newuser_popup" class="login_wrapper fadeInDown"">
+        <div id="newuser_content">
+            <div class="loginfadeIn first"></div>
+            <h2>New User</h2>
+            <form action="/" method="POST">
+                {% csrf_token %}
+                <table id="login_table">
+                    {{ newuserform }}
+                </table>
+                <input type="submit" value="Submit">
+                <input type="button" onclick="closeNewUser()" value="Cancel"><br/>
+            </form>
+        </div>
+    </div>
+    <script>closeNewUser()</script>
 </body>
 </html>
