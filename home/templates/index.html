@@ -233,41 +233,54 @@
             <button id="sidebar_button" class="openbtn" onclick="openNav()"></button>
             <h1 class="navbar-brand">Tasks</h1>
             <div>
-                <a href="" onClick="openLogin()" style="color: gray; margin-right: 10px;">Login</a>
-                <a href="" onClick="openNewUser()" style="color: gray;">New User</a>
+                {% if user.is_authenticated %}
+                    <form action="/logout" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" value="Logout">
+                    </form>
+                {% else %}
+                    <a href="" onClick="openLogin()" style="color: gray; margin-right: 10px;">Login</a>
+                    <a href="" onClick="openNewUser()" style="color: gray;">New User</a>
+                {% endif %}
             </div>
         </nav>
-        <p style="text-align: center;">No content found. Try logging in.</p>
+        {% if user.is_authenticated %}
+            <p style="text-align: center;">You're logged in!</p>
+        {% else %}
+            <p style="text-align: center;">No content found. Try logging in.</p>
+        {% endif %}
     </div>
-    <div id="login_popup" class="login_wrapper fadeInDown">
-        <div id="login_content">
-            <div class="fadeIn first"></div>
-            <h2>Login</h2>
-            <form action="/" method="POST">
-                {% csrf_token %}
-                <table id="login_table">
-                    {{ loginform }}
-                </table>
-                <input type="submit" value="Submit">
-                <input type="button" onclick="closeLogin()" value="Cancel"><br/>
-            </form>
-            <button onclick="closeLogin(); openNewUser()">New User</button>
+    {% if not user.is_authenticated %}
+        <div id="login_popup" class="login_wrapper fadeInDown">
+            <div id="login_content">
+                <div class="fadeIn first"></div>
+                <h2>Login</h2>
+                <form action="/" method="POST">
+                    {% csrf_token %}
+                    <table id="login_table">
+                        {{ loginform }}
+                    </table>
+                    <input type="submit" value="Submit">
+                    <input type="button" onclick="closeLogin()" value="Cancel"><br/>
+                </form>
+                <button onclick="closeLogin(); openNewUser()">New User</button>
+            </div>
         </div>
-    </div>
-    <div id="newuser_popup" class="login_wrapper fadeInDown"">
-        <div id="newuser_content">
-            <div class="loginfadeIn first"></div>
-            <h2>New User</h2>
-            <form action="/" method="POST">
-                {% csrf_token %}
-                <table id="login_table">
-                    {{ newuserform }}
-                </table>
-                <input type="submit" value="Submit">
-                <input type="button" onclick="closeNewUser()" value="Cancel"><br/>
-            </form>
+        <div id="newuser_popup" class="login_wrapper fadeInDown"">
+            <div id="newuser_content">
+                <div class="loginfadeIn first"></div>
+                <h2>New User</h2>
+                <form action="/" method="POST">
+                    {% csrf_token %}
+                    <table id="login_table">
+                        {{ newuserform }}
+                    </table>
+                    <input type="submit" value="Submit">
+                    <input type="button" onclick="closeNewUser()" value="Cancel"><br/>
+                </form>
+            </div>
         </div>
-    </div>
+    {% endif %}
     <script>closeNewUser()</script>
 </body>
 </html>
