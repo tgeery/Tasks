@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}
+<style>
+    .centercontent {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<!-- <script type='text/javascript'>
+    cnt = 0
+    window.onload = () => {
+        dat = "{\"link\":{{ links }} }";
+        while(dat.indexOf("&#x27;") != -1)
+            dat = dat.replace("&#x27;","\"");
+        json = JSON.parse(dat);
+        s = json["link"];
+        var container = document.getElementById("taskslist");
+        for(i = 0; i < s.length; i++) {
+            var div = document.createElement("div");
+            var nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.name = "name" + cnt
+            nameInput.value = s[i].linkname;
+            div.appendChild(nameInput);
+            var urlInput = document.createElement("input");
+            urlInput.type = "text";
+            urlInput.name = "url" + cnt;
+            urlInput.value = s[i].linkurl;
+            div.appendChild(urlInput);
+            container.appendChild(div);
+            cnt++;
+        }
+    }
+    function addField() {
+        var container = document.getElementById("taskslist");
+        var div = document.createElement("div");
+        var nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.name = "name" + cnt;
+        div.appendChild(nameInput);
+        var urlInput = document.createElement("input");
+        urlInput.type = "text";
+        urlInput.name = "url" + cnt;
+        div.appendChild(urlInput);
+        container.appendChild(div);
+        console.log("adding " + cnt);
+        cnt++;
+    }
+</script> -->
+<title>Tasks - Profile</title>
+{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        <p style="text-align: center;">Your current tasks.</p>
+        <form method="post" action="profile">
+            {% csrf_token %}
+            <div class="centercontent" id="taskslist">
+                {% for t in tasksform %}
+                    {% if forloop.counter0|divisibleby:2 %}
+                    <div>
+                        {{ t }}
+                    {% else %}
+                        {{ t }}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <!-- <div class="centercontent" id="taskslist"></div> -->
+            <div class="centercontent">
+                <div>
+                    <button type="submit" name="addItem" value="{{ cnt }}">Add Item</button>
+                    <button type="submit" name="removeItem" value="{{ cnt }}">Remove Item</button>
+                </div>
+                <input type="submit" value="Save">
+            </div>
+        </form>
+    {% else %}
+        <p style="text-align: center;">No content found. Try logging in.</p>
+    {% endif %}
+{% endblock %}
