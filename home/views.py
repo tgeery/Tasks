@@ -3,10 +3,10 @@ from .forms import LoginForm, NewUserForm, TasksForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import UserTasks
+from datetime import date
 
 
 def index(request, *args, **kwargs):
-    users = User.objects.all()
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -16,14 +16,14 @@ def index(request, *args, **kwargs):
                 uid = request.user.id
                 tasks = UserTasks.objects.filter(userid=uid)
                 items = []
-                [ items.append({'name':task.linkname,'url':task.linkurl}) for task in tasks ]
+                [ items.append({'status':date.today() == task.lastdate,'name':task.linkname,'url':task.linkurl,'date':task.lastdate}) for task in tasks ]
                 return render(request, 'index.html', {'tasks':items})
     else:
         if request.user.is_authenticated:
             uid = int(request.user.id)
             tasks = UserTasks.objects.filter(userid=uid)
             items = []
-            [ items.append({'name':task.linkname,'url':task.linkurl}) for task in tasks ]
+            [ items.append({'status':date.today() == task.lastdate,'name':task.linkname,'url':task.linkurl,'date':task.lastdate}) for task in tasks ]
             return render(request, 'index.html', {"tasks":items})
         else:
             loginform = LoginForm()

@@ -56,3 +56,9 @@ class TasksForm(forms.Form):
     
     def getCount():
         return self.cnt
+
+
+class CurrentTasksForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(CurrentTasksForm, self).__init__(*args)
+        name = ''

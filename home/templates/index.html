@@ -14,9 +14,15 @@
     {% if user.is_authenticated %}
         <p style="text-align: center;">Hi {{ user }}, you're logged in!</p>
         <table style="margin-left: auto; margin-right: auto">
-            <tr><th>Status</th><th>Link Name</th><th>Link URL</th></tr>
+            <tr><th>Status</th><th>Last Completed</th><th>Link Name</th><th>Link URL</th></tr>
         {% for task in tasks %}
-            <tr><td><a href="#">Incomplete</a></td><td>{{ task.name }}</td><td>{{ task.url }}</td></p>
+            <tr><td><a href="#">
+                {% if task.status %}
+                    Completed
+                {% else %}
+                    Incomplete
+                {% endif %}
+            </a></td><td>{{ task.date }}</td><td>{{ task.name }}</td><td>{{ task.url }}</td></p>
         {% endfor %}
         </table>
     {% else %}
