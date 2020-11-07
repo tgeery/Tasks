@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import LoginForm, NewUserForm, TasksForm
+from .forms import LoginForm, NewUserForm, TasksForm, CurrentTasksForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import UserTasks
@@ -13,18 +13,14 @@ def index(request, *args, **kwargs):
             user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             if user is not None:
                 login(request, user)
-                uid = request.user.id
-                tasks = UserTasks.objects.filter(userid=uid)
-                items = []
-                [ items.append({'status':date.today() == task.lastdate,'name':task.linkname,'url':task.linkurl,'date':task.lastdate}) for task in tasks ]
-                return render(request, 'index.html', {'tasks':items})
+                uid = int(request.user.id)
+                tasks = CurrentTasksForm(userid=uid)
+                return render(request, 'index.html', {'tasks':tasks})
     else:
         if request.user.is_authenticated:
             uid = int(request.user.id)
-            tasks = UserTasks.objects.filter(userid=uid)
-            items = []
-            [ items.append({'status':date.today() == task.lastdate,'name':task.linkname,'url':task.linkurl,'date':task.lastdate}) for task in tasks ]
-            return render(request, 'index.html', {"tasks":items})
+            tasks = CurrentTasksForm(userid=uid)
+            return render(request, 'index.html', {"tasks":tasks})
         else:
             loginform = LoginForm()
             newuserform = NewUserForm()

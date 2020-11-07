@@ -14,16 +14,18 @@
     {% if user.is_authenticated %}
         <p style="text-align: center;">Hi {{ user }}, you're logged in!</p>
         <table style="margin-left: auto; margin-right: auto">
-            <tr><th>Status</th><th>Last Completed</th><th>Link Name</th><th>Link URL</th></tr>
-        {% for task in tasks %}
-            <tr><td><a href="#">
-                {% if task.status %}
-                    Completed
-                {% else %}
-                    Incomplete
-                {% endif %}
-            </a></td><td>{{ task.date }}</td><td>{{ task.name }}</td><td>{{ task.url }}</td></p>
-        {% endfor %}
+            <tr><th>Status</th><th>Link Name</th><th>Link URL</th><th>Last Completed</th></tr>
+            <form method="post" action="profile">
+                <tr>
+                {% csrf_token %}
+                {% for t in tasks %}
+                    {% if forloop.counter0|divisibleby:4 %}
+                        </tr><tr><td><button>{{ t }}</button></td>
+                    {% else %}
+                        <td>{{ t }}</td>
+                    {% endif %}
+                {% endfor %}
+            </form>
         </table>
     {% else %}
         <p style="text-align: center;">No content found. Try logging in.</p>

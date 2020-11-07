@@ -61,4 +61,16 @@ class TasksForm(forms.Form):
 class CurrentTasksForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(CurrentTasksForm, self).__init__(*args)
-        name = ''
+        self.cnt = 0
+        uid = kwargs['userid']
+        tasks = UserTasks.objects.filter(userid=uid)
+        for task in tasks:
+            st = 'Complete' if date.today() == task.lastdate else 'Incomplete'
+            self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: lightcoral; padding-left: 10px; padding-right: 10px;'}))
+            self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+            self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+            self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=task.lastdate, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+            self.cnt += 1
+    
+    def getCount():
+        return self.cnt
