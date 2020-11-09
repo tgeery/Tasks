@@ -2,20 +2,26 @@ from django.shortcuts import render
 from .forms import LoginForm, NewUserForm, TasksForm, CurrentTasksForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from .models import UserTasks
 from datetime import date
 
 
 def index(request, *args, **kwargs):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user is not None:
-                login(request, user)
-                uid = int(request.user.id)
-                tasks = CurrentTasksForm(userid=uid)
-                return render(request, 'index.html', {'tasks':tasks})
+        if request.user.is_authenticated:
+            uid = int(request.user.id)
+            CurrentTasksForm(request.POST, userid=uid)
+            return HttpResponseRedirect('/')
+        else:
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                if user is not None:
+                    login(request, user)
+                    uid = int(request.user.id)
+                    tasks = CurrentTasksForm(userid=uid)
+                    return render(request, 'index.html', {'tasks':tasks})
     else:
         if request.user.is_authenticated:
             uid = int(request.user.id)

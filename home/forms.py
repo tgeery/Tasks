@@ -64,13 +64,27 @@ class CurrentTasksForm(forms.Form):
         self.cnt = 0
         uid = kwargs['userid']
         tasks = UserTasks.objects.filter(userid=uid)
-        for task in tasks:
-            st = 'Complete' if date.today() == task.lastdate else 'Incomplete'
-            self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: lightcoral; padding-left: 10px; padding-right: 10px;'}))
-            self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
-            self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
-            self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=task.lastdate, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
-            self.cnt += 1
+        if len(args) > 0:
+            url = ''
+            for arg in args[0]:
+                if 'url' in arg:
+                    url = args[0][arg]
+            if len(url) > 0:
+                t = tasks.filter(linkurl=url)
+                print(t[0])
+                dt = date.today()
+                print(dt)
+                u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
+                u.save(update_fields=['lastdate'])
+        else:
+            for task in tasks:
+                st = 'Complete' if date.today().year == task.lastdate.year and date.today().month == task.lastdate.month and date.today().day == task.lastdate.day else 'Incomplete'
+                st_clr = 'lightgreen' if st == 'Complete' else 'lightcoral'
+                self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: {}; padding-left: 10px; padding-right: 10px;'.format(st_clr)}))
+                self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=task.lastdate, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                self.cnt += 1
     
     def getCount():
         return self.cnt
