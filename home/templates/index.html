@@ -11,6 +11,11 @@
         padding-right: 0px;
     }
 </style>
+<script type="text/javascript">
+    function fmtLink(lnk) {
+		return "<a href="+lnk+">"+lnk+"</a>"
+	}
+</script>
 <title>Tasks - Home</title>
 {% endblock %}
 
@@ -29,7 +34,11 @@
                             {% csrf_token %}
                             <tr><td><button>{{ t }}</button></td>
                     {% else %}
-                        <td>{{ t }}</td>
+						{% if forloop.counter0|divisibleby:2 %}
+							<td><a href='{{ t.value }}' target="_blank">{{ t }}</a></td>
+						{% else %}
+                        	<td>{{ t }}</td>
+						{% endif %}
                     {% endif %}
                 {% endfor %}
         </table>
