@@ -1,5 +1,5 @@
 from django import forms
-from .models import UserTasks
+from .models import UserTasks, CompletedTasks
 from datetime import date
 
 
@@ -71,11 +71,14 @@ class CurrentTasksForm(forms.Form):
                     url = args[0][arg]
             if len(url) > 0:
                 t = tasks.filter(linkurl=url)
-                print(t[0])
                 dt = date.today()
-                print(dt)
-                u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
-                u.save(update_fields=['lastdate'])
+                if not (dt.year == t[0].lastdate.year and dt.month == t[0].lastdate.month and dt.day == t[0].lastdate.day):
+                    print('update last date')
+                    n = CompletedTasks.objects.all().count()
+                    h = CompletedTasks(n+1, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
+                    h.save()
+                    u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
+                    u.save(update_fields=['lastdate'])
         else:
             for task in tasks:
                 st = 'Complete' if date.today().year == task.lastdate.year and date.today().month == task.lastdate.month and date.today().day == task.lastdate.day else 'Incomplete'
@@ -83,7 +86,8 @@ class CurrentTasksForm(forms.Form):
                 self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: {}; padding-left: 10px; padding-right: 10px;'.format(st_clr)}))
                 self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
-                self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=task.lastdate, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                dt = task.lastdate.strftime("%B %d, %Y")
+                self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=dt, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 self.cnt += 1
     
     def getCount():

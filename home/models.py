@@ -9,4 +9,12 @@ class UserTasks(models.Model):
     userid = IntegerField()
     linkname = CharField(max_length=100)
     linkurl = CharField(max_length=100)
-    lastdate = DateField(default=date(1970, 1, 1))
+    lastdate = DateField()
+
+
+class CompletedTasks(models.Model):
+    uid = UUIDField(primary_key=True)
+    userid = IntegerField()
+    linkname = CharField(max_length=100)
+    linkurl = CharField(max_length=100)
+    completedate = DateField(default=date(1970,1,1))
