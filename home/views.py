@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import LoginForm, NewUserForm, TasksForm, CurrentTasksForm
+from .forms import LoginForm, NewUserForm, TasksForm, CurrentTasksForm, TaskHistory
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -46,3 +46,10 @@ def userProfile(request, *args, **kwargs):
     else:
         tasksform = TasksForm(user_key=uid)
     return render(request, 'profile.html', {'tasksform': tasksform, 'cnt': tasksform.cnt})
+
+def userGraphs(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        uid = int(request.user.id)
+        print('uid {}'.format(uid))
+        taskhist = TaskHistory(userid=uid)
+    return render(request, 'graphs.html', {'taskhistory': taskhist})

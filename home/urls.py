@@ -21,4 +21,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('logout', views.userlogout, name='logout'),
     path('profile', views.userProfile, name='profile'),
+    path('graphs', views.userGraphs, name='graphs'),
 ]

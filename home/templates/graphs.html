@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+<style>
+    .centercontent {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<title>Tasks - Graphs</title>
+{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        <p style="text-align: center;">Your task completion history.</p>
+        <form method="post" action="/">
+            {% csrf_token %}
+            <div class="centercontent" id="taskslist">
+				{{ taskhistory }}
+            </div>
+			<input type="submit" value="Done">
+        </form>
+    {% else %}
+        <p style="text-align: center;">No content found. Try logging in.</p>
+    {% endif %}
+{% endblock %}

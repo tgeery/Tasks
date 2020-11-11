@@ -92,3 +92,23 @@ class CurrentTasksForm(forms.Form):
     
     def getCount():
         return self.cnt
+
+
+class TaskHistory(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(TaskHistory, self).__init__(*args)
+        self.taskcnt = 0
+        self.cnt = 0
+        uid = kwargs['userid']
+        tasks = UserTasks.objects.filter(userid=uid)
+        for task in tasks:
+            print('{} {}'.format(self.taskcnt, task.linkname))
+            s = '{}'.format(task.linkname)
+            #self.fields['sec{}'.format(self.taskcnt)] = forms.CharField(initial=task.linkname, label='', max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+            hist = CompletedTasks.objects.filter(userid=uid,linkname=task.linkname,linkurl=task.linkurl)
+            for h in hist:
+                #self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=h.completedate, label='', max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                s += ',{}'.format(h.completedate)
+                self.cnt += 1
+            self.fields['list{}'.format(self.taskcnt)] = forms.CharField(initial=s, label='', max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+            self.taskcnt += 1
