@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import LoginForm, NewUserForm, TasksForm, CurrentTasksForm, TaskHistory
+from .forms import LoginForm, FailedLoginForm, NewUserForm, TasksForm, CurrentTasksForm, TaskHistory
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -8,20 +8,23 @@ from datetime import date
 
 
 def index(request, *args, **kwargs):
+    newuserform = None
     if request.method == 'POST':
         if request.user.is_authenticated:
             uid = int(request.user.id)
             CurrentTasksForm(request.POST, userid=uid)
             return HttpResponseRedirect('/')
         else:
-            form = LoginForm(request.POST)
-            if form.is_valid():
-                user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+            loginform = LoginForm(request.POST)
+            if loginform.is_valid():
+                user = authenticate(request, username=loginform.cleaned_data['username'], password=loginform.cleaned_data['password'])
                 if user is not None:
                     login(request, user)
                     uid = int(request.user.id)
                     tasks = CurrentTasksForm(userid=uid)
                     return render(request, 'index.html', {'tasks':tasks})
+                else:
+                    loginform = FailedLoginForm()
     else:
         if request.user.is_authenticated:
             uid = int(request.user.id)
@@ -50,6 +53,5 @@ def userProfile(request, *args, **kwargs):
 def userGraphs(request, *args, **kwargs):
     if request.user.is_authenticated:
         uid = int(request.user.id)
-        print('uid {}'.format(uid))
         taskhist = TaskHistory(userid=uid)
     return render(request, 'graphs.html', {'taskhistory': taskhist})

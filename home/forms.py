@@ -8,6 +8,12 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput())
 
 
+class FailedLoginForm(forms.Form):
+    username = forms.CharField(label='Username', max_length=100)
+    password = forms.CharField(widget=forms.PasswordInput())
+    errMsg = forms.CharField(label='', initial='Invalid credentials', widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+
+
 class NewUserForm(forms.Form):
     firstname = forms.CharField(label='First', max_length=100)
     lastname = forms.CharField(label='Last', max_length=100)
