@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+<style>
+h1 {
+	text-align: center
+}
+#id_theme,
+#id_idea1,
+#id_idea2,
+#id_idea3,
+#id_idea4,
+#id_idea5,
+#id_idea6,
+#id_idea7,
+#id_idea8,
+#id_idea9,
+#id_idea10 {
+	width: 950px
+}
+.centercontent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+</style>
+<title>Ten Things List</title>
+{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+		<h1>Ten Things List</h1>
+        <table style="margin-left: auto; margin-right: auto">
+        	<form method="post" action="">
+            	{% csrf_token %}
+				{{ tenform }}
+            	<div class="centercontent">
+                    <input type="submit" value="Submit" />
+                </div>
+			</form>
+		</table>
+	{% else %}
+		<p>Need to be logged in.</p>
+    {% endif %}
+{% endblock %}
