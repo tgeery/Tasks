@@ -71,15 +71,14 @@ class CurrentTasksForm(forms.Form):
         uid = kwargs['userid']
         tasks = UserTasks.objects.filter(userid=uid)
         if len(args) > 0:
-            url = ''
+            name = ''
             for arg in args[0]:
-                if 'url' in arg:
-                    url = args[0][arg]
-            if len(url) > 0:
-                t = tasks.filter(linkurl=url)
+                if 'name' in arg:
+                    name = args[0][arg]
+            if len(name) > 0:
+                t = tasks.filter(linkname=name)
                 dt = date.today()
                 if not (dt.year == t[0].lastdate.year and dt.month == t[0].lastdate.month and dt.day == t[0].lastdate.day):
-                    print('update last date')
                     n = CompletedTasks.objects.all().count()
                     h = CompletedTasks(n+1, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
                     h.save()
@@ -108,7 +107,6 @@ class TaskHistory(forms.Form):
         uid = kwargs['userid']
         tasks = UserTasks.objects.filter(userid=uid)
         for task in tasks:
-            print('{} {}'.format(self.taskcnt, task.linkname))
             s = '{}'.format(task.linkname)
             #self.fields['sec{}'.format(self.taskcnt)] = forms.CharField(initial=task.linkname, label='', max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
             hist = CompletedTasks.objects.filter(userid=uid,linkname=task.linkname,linkurl=task.linkurl)
