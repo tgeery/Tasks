@@ -14,7 +14,7 @@
     var el;
     var svG;
     var svg_cnt = 0;
-    function setGraph() {
+    function setGraph(dt_input) {
         // $(".scatter_area").attr("id", "scatter_area" + svg_cnt);
         svg_cnt++;
         var div = document.createElement("p");
@@ -24,8 +24,8 @@
         
         // set the dimensions and margins of the graph
         var margin = {top: 10, right: 40, bottom: 30, left: 30},
-            width = 450 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
+            width = 750 - margin.left - margin.right,
+            height = 200 - margin.top - margin.bottom;
         
         // append the svg object to the body of the page
         svG = d3.select("#scatter_area" + svg_cnt)
@@ -35,24 +35,56 @@
         .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
-        
+
+        // var s = "2020-01-01,2020-01-02,2020-01-03,2020-01-04," +
+                // "2020-01-05,2020-01-06,2020-01-07,2020-01-08," +
+                // "2020-01-09,2020-01-10,2020-01-11";
+        // var vals = ["2020-01-01","2020-01-02","2020-01-03","2020-01-04",
+        //             "2020-01-05","2020-01-06","2020-01-07","2020-01-08",
+        //             "2020-01-09","2020-01-10","2020-01-11"];
+        var vals = dt_input.split(",");
+        var data = [];
+        var yval = 0;
+        if(vals[0].length > 0) {
+            for (var i = 0; i < vals.length; i++) {
+                var d = {};
+                d["x"] = vals[i];
+                d["y"] = ++yval;
+                data.push(d);
+            }
+        }
+        if(data.length > 0) {
+            var dt = new Date(data[0].x);
+            dt.setDate(dt.getDate()-1);
+            console.log(dt.toISOString());
+            var d = {};
+            d["x"] = dt.toISOString();
+            d["y"] = "";
+            data.unshift(d);
+        }
+        console.log(data)
         // Create data
-        var data = [ {x:0, y:90}, {x:10, y:80}, {x:20, y:45}, {x:30, y:20}, 
-                    {x:40, y:5}, {x:50, y:0}, {x:60, y:5}, {x:70, y: 20}, 
-                    {x:80, y:45}, {x:90, y:80}, {x:100, y:90} ]
+        // var data = [ {x:vals[0], y:90}, {x:vals[1], y:80}, {x:vals[2], y:45}, {x:vals[3], y:20}, 
+        //             {x:vals[4], y:5}, {x:vals[5], y:0}, {x:vals[6], y:5}, {x:vals[7], y: 20}, 
+        //             {x:vals[8], y:45}, {x:vals[9], y:80}, {x:vals[10], y:90} ]
+        // var data = [ {x:0, y:90}, {x:10, y:80}, {x:20, y:45}, {x:30, y:20}, 
+        //             {x:40, y:5}, {x:50, y:0}, {x:60, y:5}, {x:70, y: 20}, 
+        //             {x:80, y:45}, {x:90, y:80}, {x:100, y:90} ]
         
         // X scale and Axis
-        var x = d3.scaleLinear()
-            .domain([0, 100])         // This is the min and the max of the data: 0 to 100 if percentages
-            .range([0, width]);       // This is the corresponding value I want in Pixel
+        var x = d3.scaleTime()
+            .domain(d3.extent(data, function(d) {
+                return new Date(d.x);
+            }))
+            .range([0, width]);
         svG
         .append('g')
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
         
-        // X scale and Axis
+        // Y scale and Axis
         var y = d3.scaleLinear()
-            .domain([0, 100])         // This is the min and the max of the data: 0 to 100 if percentages
+            .domain([0, yval])         // This is the min and the max of the data: 0 to 100 if percentages
             .range([height, 0]);       // This is the corresponding value I want in Pixel
         svG
         .append('g')
@@ -61,22 +93,23 @@
         // Add dots for data
         svG
         .selectAll("whatever")
-        .data(data)
+        .data(data.slice(1,data.length))
         .enter()
         .append("circle")
-            .attr("cx", function(d){ return x(d.x) })
+            .attr("cx", function(d){ return x(new Date(d.x)) })
             .attr("cy", function(d){ return y(d.y) })
             .attr("r", 3);
 
         // Add the line
         svG
         .append("path")
-        .datum(data)
+        .datum(data.slice(1,data.length))
+        .attr("padding", 10)
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-            .x(function(d) { return x(d.x) })
+            .x(function(d) { return x(new Date(d.x)) })
             .y(function(d) { return y(d.y) })
             );
         
@@ -92,8 +125,10 @@
         <form method="post" action="/">
             {% csrf_token %}
             <div class="centercontent" id="taskslist">
-                {{ taskhistory }}
-                <script>setGraph();</script>
+                {% for dat in data %}
+                    <p>{{ dat.name }}</p>
+                    <script>setGraph("{{dat.dates_lst}}");</script>
+                {% endfor %}
             </div>
 			<input type="submit" value="Done">
         </form>

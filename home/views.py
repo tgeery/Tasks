@@ -3,7 +3,7 @@ from .forms import LoginForm, FailedLoginForm, NewUserForm, TasksForm, CurrentTa
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from .models import UserTasks
+from .models import UserTasks, CompletedTasks
 from datetime import date
 
 
@@ -54,4 +54,13 @@ def userGraphs(request, *args, **kwargs):
     if request.user.is_authenticated:
         uid = int(request.user.id)
         taskhist = TaskHistory(userid=uid)
-    return render(request, 'graphs.html', {'taskhistory': taskhist})
+        data = []
+        for task in taskhist:
+            name = task.value().split(',')[0]
+            dates = task.value().split(',')[1:]
+            dates_str = ''
+            for dt in dates:
+                dates_str += dt + ','
+            dates_str = dates_str.rstrip(',')
+            data.append({'name':name, 'dates_lst':dates_str})
+    return render(request, 'graphs.html', {'data': data})
