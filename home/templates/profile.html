@@ -59,15 +59,19 @@
         <form method="post" action="profile">
             {% csrf_token %}
             <div class="centercontent" id="taskslist">
+                <div>
                 {% for t in tasksform %}
-                    {% if forloop.counter0|divisibleby:2 %}
+                    {% if forloop.counter0|divisibleby:4 %}
+                    Share
+                    </div>
                     <div>
                         {{ t }}
                     {% else %}
                         {{ t }}
-                    </div>
                     {% endif %}
                 {% endfor %}
+                Share
+                </div>
             </div>
             <!-- <div class="centercontent" id="taskslist"></div> -->
             <div class="centercontent">

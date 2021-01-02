@@ -1,6 +1,6 @@
 from django import forms
 from .models import UserTasks, CompletedTasks
-from datetime import date
+from datetime import date, time
 
 
 class LoginForm(forms.Form):
@@ -41,11 +41,19 @@ class TasksForm(forms.Form):
                     name = args[0][item]
                 elif 'url' in item:
                     url = args[0][item]
+                elif 'time' in item:
+                    # duration = time(int(args[0][item].split(':')[0]), int(args[0][item].split(':')[1]))
+                    duration = args[0][item]
+                elif 'share' in item:
+                    # share = False
+                    # if 'on' in args[0][item]:
+                    #     share = True
+                    share = args[0][item]
                     if len(tasks) > sz and tasks[sz].linkname != name and tasks[sz].linkurl != url:
-                        u = UserTasks(sz+1, uid, name, url)
-                        u.save(update_fields=['linkname','linkurl'])
+                        u = UserTasks(sz+1, uid, name, url, duration, share)
+                        u.save(update_fields=['linkname','linkurl','duration','share'])
                     else:
-                        u = UserTasks(sz+1, uid, name, url)
+                        u = UserTasks(sz+1, uid, name, url, duration, share)
                         u.save()
                     sz += 1
         else:
@@ -58,6 +66,8 @@ class TasksForm(forms.Form):
                 url_lbl = tasks[i].linkurl
             self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=name_lbl, label='', max_length=100)
             self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=url_lbl, label='', max_length=100)
+            self.fields['time{}'.format(self.cnt)] = forms.IntegerField(initial=15)
+            self.fields['share{}'.format(self.cnt)] = forms.BooleanField(initial=False)
             self.cnt+=1
     
     def getCount():
@@ -70,6 +80,7 @@ class CurrentTasksForm(forms.Form):
         self.cnt = 0
         uid = kwargs['userid']
         tasks = UserTasks.objects.filter(userid=uid)
+        print(tasks)
         if len(args) > 0:
             name = ''
             for arg in args[0]:
@@ -80,9 +91,9 @@ class CurrentTasksForm(forms.Form):
                 dt = date.today()
                 if not (dt.year == t[0].lastdate.year and dt.month == t[0].lastdate.month and dt.day == t[0].lastdate.day):
                     n = CompletedTasks.objects.all().count()
-                    h = CompletedTasks(n+1, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
+                    h = CompletedTasks(n+1, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day), t[0].duration, t[0].share)
                     h.save()
-                    u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day))
+                    u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day), t[0].duration, t[0].share)
                     u.save(update_fields=['lastdate'])
         else:
             for task in tasks:
