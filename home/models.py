@@ -19,5 +19,5 @@ class CompletedTasks(models.Model):
     userid = IntegerField()
     linkname = CharField(max_length=1000)
     linkurl = CharField(max_length=1000)
-    completedate = IntegerField(default=date(1970,1,1))
-    duration = BooleanField(default=15)
+    completedate = DateField(default=date(1970,1,1))
+    duration = IntegerField(default=15)

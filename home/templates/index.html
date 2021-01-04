@@ -23,11 +23,11 @@
     {% if user.is_authenticated %}
         <p style="text-align: center;">Hi {{ user }}, you're logged in!</p>
         <table style="margin-left: auto; margin-right: auto">
-            <tr><th>Status</th><th>Link Name</th><th>Link URL</th><th>Last Completed</th></tr>
+            <tr><th>Status</th><th>Minutes</th><th>Link Name</th><th>Link URL</th><th>Last Completed</th></tr>
             <tr>
             <form method="post" action="">
                 {% for t in tasks %}
-                    {% if forloop.counter0|divisibleby:4 %}
+                    {% if forloop.counter0|divisibleby:5 %}
                         </form>
                         </tr>
                         <form method="post" action="">

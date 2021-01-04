@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
     'ten_things.apps.TenThingsConfig',
+    'schedule.apps.ScheduleConfig',
 ]
 
 MIDDLEWARE = [

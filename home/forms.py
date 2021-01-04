@@ -37,23 +37,21 @@ class TasksForm(forms.Form):
             name = ''
             sz = 0
             for item in args[0]:
+                share = False
                 if 'name' in item:
                     name = args[0][item]
                 elif 'url' in item:
                     url = args[0][item]
                 elif 'time' in item:
-                    # duration = time(int(args[0][item].split(':')[0]), int(args[0][item].split(':')[1]))
                     duration = args[0][item]
                 elif 'share' in item:
-                    # share = False
-                    # if 'on' in args[0][item]:
-                    #     share = True
-                    share = args[0][item]
+                    if 'on' in args[0][item]:
+                        share = True
                     if len(tasks) > sz and tasks[sz].linkname != name and tasks[sz].linkurl != url:
-                        u = UserTasks(sz+1, uid, name, url, duration, share)
+                        u = UserTasks(sz+1, uid, name, url, '1970-01-01', duration, share)
                         u.save(update_fields=['linkname','linkurl','duration','share'])
                     else:
-                        u = UserTasks(sz+1, uid, name, url, duration, share)
+                        u = UserTasks(sz+1, uid, name, url, '1970-01-01', duration, share)
                         u.save()
                     sz += 1
         else:
@@ -91,15 +89,16 @@ class CurrentTasksForm(forms.Form):
                 dt = date.today()
                 if not (dt.year == t[0].lastdate.year and dt.month == t[0].lastdate.month and dt.day == t[0].lastdate.day):
                     n = CompletedTasks.objects.all().count()
-                    h = CompletedTasks(n+1, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day), t[0].duration, t[0].share)
+                    h = CompletedTasks(n+1, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day), t[0].duration)
                     h.save()
-                    u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day), t[0].duration, t[0].share)
+                    u = UserTasks(t[0].uid, t[0].userid, t[0].linkname, t[0].linkurl, date(dt.year, dt.month, dt.day), t[0].duration)
                     u.save(update_fields=['lastdate'])
         else:
             for task in tasks:
                 st = 'Complete' if date.today().year == task.lastdate.year and date.today().month == task.lastdate.month and date.today().day == task.lastdate.day else 'Incomplete'
                 st_clr = 'lightgreen' if st == 'Complete' else 'lightcoral'
                 self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: {}; padding-left: 10px; padding-right: 10px;'.format(st_clr)}))
+                self.fields['minutes{}'.format(self.cnt)] = forms.IntegerField()
                 self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 dt = task.lastdate.strftime("%B %d, %Y")
