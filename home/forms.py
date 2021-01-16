@@ -78,7 +78,6 @@ class CurrentTasksForm(forms.Form):
         self.cnt = 0
         uid = kwargs['userid']
         tasks = UserTasks.objects.filter(userid=uid)
-        print(tasks)
         if len(args) > 0:
             name = ''
             for arg in args[0]:
@@ -98,7 +97,7 @@ class CurrentTasksForm(forms.Form):
                 st = 'Complete' if date.today().year == task.lastdate.year and date.today().month == task.lastdate.month and date.today().day == task.lastdate.day else 'Incomplete'
                 st_clr = 'lightgreen' if st == 'Complete' else 'lightcoral'
                 self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: {}; padding-left: 10px; padding-right: 10px;'.format(st_clr)}))
-                self.fields['minutes{}'.format(self.cnt)] = forms.IntegerField()
+                self.fields['minutes{}'.format(self.cnt)] = forms.IntegerField(initial=task.duration)
                 self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 dt = task.lastdate.strftime("%B %d, %Y")

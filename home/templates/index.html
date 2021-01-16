@@ -34,8 +34,8 @@
                             {% csrf_token %}
                             <tr><td><button>{{ t }}</button></td>
                     {% else %}
-						{% if forloop.counter0|divisibleby:2 %}
-							<td><a href='{{ t.value }}' target="_blank">{{ t }}</a></td>
+						{% if forloop.counter0|divisibleby:3 %}
+							<td>a<a href='{{ t.value }}' target="_blank">{{ t }}</a></td>
 						{% else %}
                         	<td>{{ t }}</td>
 						{% endif %}

@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import CharField, IntegerField, UUIDField, DateField, TimeField, BooleanField
-from django_mysql.models import ListCharField
 from datetime import date, time
 
 

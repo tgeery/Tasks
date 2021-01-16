@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  web:
+    env_file:
+      - .env
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8010
+    volumes:
+      - ./:/tmp/Tasks
+    ports:
+      - "8010:8010"
