@@ -12,7 +12,7 @@ def index(request, *args, **kwargs):
     if request.method == 'POST':
         if request.user.is_authenticated:
             uid = int(request.user.id)
-            CurrentTasksForm(request.POST, userid=uid)
+            tasks = CurrentTasksForm(request.POST, userid=uid)
             return HttpResponseRedirect('/')
         else:
             loginform = LoginForm(request.POST)

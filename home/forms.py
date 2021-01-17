@@ -99,7 +99,8 @@ class CurrentTasksForm(forms.Form):
                 self.fields['status{}'.format(self.cnt)] = forms.CharField(initial=st, max_length=50, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none; width: 100px; background-color: {}; padding-left: 10px; padding-right: 10px;'.format(st_clr)}))
                 self.fields['minutes{}'.format(self.cnt)] = forms.IntegerField(initial=task.duration)
                 self.fields['name{}'.format(self.cnt)] = forms.CharField(initial=task.linkname, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
-                self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                #self.fields['url{}'.format(self.cnt)] = forms.CharField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
+                self.fields['url{}'.format(self.cnt)] = forms.URLField(initial=task.linkurl, max_length=200, widget=forms.TextInput(attrs={'readonly':'readonly'}))
                 dt = task.lastdate.strftime("%B %d, %Y")
                 self.fields['date{}'.format(self.cnt)] = forms.CharField(initial=dt, max_length=100, widget=forms.TextInput(attrs={'readonly':'readonly','style':'border: none;'}))
                 self.cnt += 1
