@@ -7,33 +7,58 @@ from .models import UserTasks, CompletedTasks
 from datetime import date
 
 
-def index(request, *args, **kwargs):
+def is_authenticated(req):
+    return True if req.user.is_authenticated else False
+
+def is_post(req):
+    return True if req.method == 'POST' else False
+
+def get_userid(req):
+    return int(req.user.id)
+
+class GetHandle:
     newuserform = None
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            uid = int(request.user.id)
-            tasks = CurrentTasksForm(request.POST, userid=uid)
-            return HttpResponseRedirect('/')
-        else:
-            loginform = LoginForm(request.POST)
-            if loginform.is_valid():
-                user = authenticate(request, username=loginform.cleaned_data['username'], password=loginform.cleaned_data['password'])
-                if user is not None:
-                    login(request, user)
-                    uid = int(request.user.id)
-                    tasks = CurrentTasksForm(userid=uid)
-                    return render(request, 'index.html', {'tasks':tasks})
-                else:
-                    loginform = FailedLoginForm()
-    else:
-        if request.user.is_authenticated:
-            uid = int(request.user.id)
+    def route(self, req):
+        isAuth = is_authenticated(req)
+        if isAuth:
+            uid = int(req.user.id)
             tasks = CurrentTasksForm(userid=uid)
-            return render(request, 'index.html', {"tasks":tasks})
+            return render(req, 'index.html', {"tasks":tasks})
         else:
             loginform = LoginForm()
             newuserform = NewUserForm()
-    return render(request, 'index.html', {'loginform': loginform, 'newuserform': newuserform})
+        return render(req, 'index.html', {'loginform': loginform, 'newuserform': newuserform})
+
+class PostHandle:
+    def route(self, req):
+        isAuth = is_authenticated(req)
+        if isAuth:
+            uid = get_userid(req)
+            tasks = CurrentTasksForm(req.POST, userid=uid)
+            return HttpResponseRedirect('/')
+        else:
+            loginform = LoginForm(req.POST)
+            if loginform.is_valid():
+                user = authenticate(req, username=loginform.cleaned_data['username'], password=loginform.cleaned_data['password'])
+                if user is not None:
+                    login(req, user)
+                    uid = get_userid(req)
+                    tasks = CurrentTasksForm(userid=uid)
+                    return render(req, 'index.html', {'tasks':tasks})
+                else:
+                    loginform = FailedLoginForm()
+        return render(req, 'index.html', {'loginform': loginform})
+
+class RequestHandle:
+    def route(self, req):
+        isPost = is_post(req)
+        if isPost:
+            return PostHandle().route(req)
+        else:
+            return GetHandle().route(req)
+
+def index(request, *args, **kwargs):
+    return RequestHandle().route(request)
 
 def userlogout(request, *args, **kwargs):
     logout(request)
